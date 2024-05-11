@@ -1,16 +1,9 @@
 from paquete1.modulo1 import Cliente
 
+cliente1 = Cliente("Nicolas", 29, "Juegos, Comics y Mangas", "Naiku", "mail@mail.com")
 
-
-# Ejemplo de uso
-Naiku = Cliente("Naiku", "ApellidoFalso", 29, "Cabildo 100", 1155559999, "naiku@gmail.com", "Hollow Knight")
-
-Naiku.comprar("Cacerolas","Walmart")
-print("------")
-Naiku.sumar_puntos(420)
-print("------")
-Naiku.imprimir_info()
-print("------")
-Naiku.sumar_puntos(50)
-print("------")
-Naiku.imprimir_info()
+print(cliente1)
+cliente1.añadir_carrito("Comic", "Tiendamia")
+cliente1.comprar("Playstation 5", "Sony")
+cliente1.ver_carrito()
+cliente1.remover_carrito("Comic", "Tiendamia")

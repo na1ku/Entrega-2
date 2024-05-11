@@ -1,94 +1,119 @@
-# Función para registrar un usuario
-def registrar_usuario(base_datos):
+# módulo2.py
+
+import os
+import re
+import json
+from modulo1 import Cliente
+
+ruta_archivo = os.path.join(os.getcwd(), "usuarios.json")
+
+def leerData():
+    if not os.path.exists(ruta_archivo):
+        return {}
+
+    try:
+        with open(ruta_archivo, "r", encoding='utf-8') as f:
+            base_datos = json.load(f)
+        return base_datos
+    except json.decoder.JSONDecodeError:
+        print(f"La lista está vacía. ¡Debes guardar información primero!")
+        return {}
+    except FileNotFoundError:
+        print("La lista no se encontró o está vacía aún")
+        return {}
+
+def validar_contrasena(contrasena):
+    if len(contrasena) < 6 or len(contrasena) > 15:
+        return False
+    if not re.search(r"\d", contrasena):
+        return False
+    if not re.search(r"[A-Z]", contrasena):
+        return False
+    if not re.search(r"[!@#$%^&*()-_+=\[\]{};:,.<>?/]", contrasena):
+        return False
+    return True
+
+def guardar_data(base_datos):
+    try:
+        with open(ruta_archivo, "w", encoding='utf-8') as f:
+            json.dump(base_datos, f, indent=2)
+            print("Datos guardados exitosamente.")
+    except Exception as e:
+        print("Error al guardar los datos:", e)
+
+def registrar_usuario():
+    base_datos = leerData()
     retry = True
 
     while retry:
+        nombre = input("Ingrese su nombre: ")
+        print("———————————————————————————————————————————————————————")
+        while True:
+            edad = input("Ingrese su edad: ")
+            if not edad.isdigit():
+                print("Edad inválida. Por favor, ingrese un número entero.")
+            else:
+                edad = int(edad)
+                break
+        email = input("Ingrese su email: ")
+        print("———————————————————————————————————————————————————————")
         usuario = input("Ingrese nombre de usuario: ")
         if usuario in base_datos:
             print("El nombre de usuario ya existe. Por favor, elija otro.")
-        elif len(usuario) >15: 
+        elif len(usuario) > 15: 
             print("El usuario debe contener menos de 15 caracteres")
         else:
-            contraseña = input("Ingrese contraseña (debe tener entre 6 y 15 caracteres y contener al menos un número, una letra mayúscula y un caracter especial): ")
-            if len(contraseña) < 6 or len(contraseña) > 15:
-                print("La contraseña es demasiado corta. Debe tener al menos 6 caracteres.")            
-            elif not any(caracter.isdigit() for caracter in contraseña):
-                print("La contraseña debe contener al menos un número.")
-            elif not any(caracter.isupper() for caracter in contraseña):
-                print("La contraseña debe contener al menos una letra mayúscula.")    
-            elif not any(caracter in "!@#$%^&*()-_+=[]{};:,.<>?/" for caracter in contraseña):
-                print("La contraseña debe contener al menos un caracter especial.")
+            print("———————————————————————————————————————————————————————")
+            if usuario in base_datos:
+                intereses = base_datos[usuario]["intereses"]
+                print(f"Tus intereses registrados son: {intereses}")
+                confirmacion = input("¿Desea mantener estos intereses? (s/n): ")
+                if confirmacion.lower() == "n":
+                    intereses = input("Ingrese sus intereses: ")
             else:
-                # Validación de la contraseña
-                contraseña_confirmacion = input("Confirme la contraseña: ")
-                if contraseña != contraseña_confirmacion:
+                intereses = input("Ingrese sus intereses: ")
+            print("———————————————————————————————————————————————————————")
+            contrasena = input("Ingrese contraseña (debe tener entre 6 y 15 caracteres y contener al menos un número, una letra mayúscula y un caracter especial): ")
+            if not validar_contrasena(contrasena):
+                print("La contraseña no cumple con los requisitos de seguridad.")
+                continue
+            else:
+                contrasena_confirmacion = input("Confirme la contraseña: ")
+                if contrasena != contrasena_confirmacion:
                     print("Las contraseñas no coinciden. Por favor, inténtelo de nuevo.")
                     continue
                 else:
-                    # Almacenar el usuario y la contraseña
-                    base_datos[usuario] = contraseña
+                    base_datos[usuario] = {
+                        "nombre": nombre,
+                        "edad": edad,
+                        "email": email,
+                        "intereses": intereses,
+                        "contrasena": contrasena,
+                        "productos": []
+                    }
+                    guardar_data(base_datos)
                     retry = False
                     print("Usuario registrado exitosamente.")
+                    return usuario
 
-# Función para mostrar la información de usuarios registrados
-def mostrar_usuarios(base_datos):
+def mostrar_usuarios():
+    base_datos = leerData()
     if base_datos:
         print("Usuarios registrados:")
-        for usuario, contraseña in base_datos.items():
-            print(f"Usuario: {usuario}, Contraseña: {contraseña}")
+        for usuario, datos in base_datos.items():
+            print(f"Usuario: {usuario}, Datos: {datos}")
     else:
         print("No hay usuarios registrados.")
 
-# Función para el login de usuarios
-def login_usuario(base_datos):
+sesiones = {}
+
+def login_usuario():
+    base_datos = leerData()
     usuario = input("Ingrese nombre de usuario: ")
-    contraseña = input("Ingrese contraseña: ")
-    if usuario in base_datos and base_datos[usuario] == contraseña:
+    contrasena = input("Ingrese contraseña: ")
+    if usuario in base_datos and base_datos[usuario]["contrasena"] == contrasena:
+        sesiones[usuario] = base_datos[usuario]
         print("Inicio de sesión exitoso.")
+        return usuario
     else:
         print("Nombre de usuario o contraseña incorrectos.")
-
-# Función principal
-def main():
-    base_datos = {}
-    is_running = True
-
-    while is_running:
-        is_wrong_answer = True
-        while is_wrong_answer:
-            print("\nBienvenido al sistema de gestión de usuarios:")
-            print("1. Registrar un nuevo usuario")
-            print("2. Mostrar usuarios registrados")
-            print("3. Iniciar sesión")
-            print("4. Salir")
-            opcion = input("Seleccione una opción ingresando el número correspondiente: ")
-            
-            # Validar entrada del usuario
-            try:
-                opcion = int(opcion) 
-                if opcion < 1 or opcion > 4:
-                    print("Opción no válida. Por favor, seleccione una opción válida.")
-                else:
-                    is_wrong_answer = False
-            except ValueError:
-                print("Por favor, ingrese un número válido.")
-                           
-                  
-        if opcion == 1:
-            print("\n*** Registro de nuevo usuario ***")
-            registrar_usuario(base_datos)
-        elif opcion == 2:
-            print("\n*** Usuarios registrados ***")
-            mostrar_usuarios(base_datos)
-        elif opcion == 3:
-            print("\n*** Iniciar sesión ***")
-            login_usuario(base_datos)
-        elif opcion == 4:
-            print("\nSaliendo del programa...")
-            is_running = False
-        else:
-            print("Opción no válida. Por favor, seleccione una opción válida.")
-
-
-# Llamada a la función principal
-main()
