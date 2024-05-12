@@ -20,9 +20,8 @@ def proceso_compra(usuario, sesiones):
     email = base_datos[usuario].get("email")
     intereses = base_datos[usuario].get("intereses")
     edad = base_datos[usuario].get("edad")
-    pais = base_datos[usuario].get("pais", "Desconocido")
 
-    cliente_actual = Cliente(nombre, edad, intereses, usuario, email)  # Eliminamos el argumento carrito
+    cliente_actual = Cliente(nombre, edad, intereses, usuario, email)
 
     while True:
         print("\n*** Menú de opciones ***")
@@ -103,13 +102,13 @@ def main():
             print("\n*** Iniciar sesión ***")
             usuario = login_usuario()
             if usuario:
-                sesiones[usuario] = True  # Marcar la sesión como abierta
-                proceso_compra(usuario, sesiones)  # Pasar 'sesiones' aquí
+                sesiones[usuario] = True  
+                proceso_compra(usuario, sesiones)  
         elif opcion == "3":
             print("\n*** Mostrar usuarios ***")
             mostrar_usuarios()
         elif opcion == "4":
-            proceso_compra(None, sesiones)  # Pasar 'sesiones' aquí también
+            proceso_compra(None, sesiones) 
         elif opcion == "5":
             print("\nSaliendo del programa...")
             is_running = False

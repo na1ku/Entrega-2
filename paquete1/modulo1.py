@@ -1,5 +1,3 @@
-# módulo1.py
-
 class Persona:
     def __init__(self, nombre, edad, intereses):
         self.nombre = nombre
@@ -24,7 +22,7 @@ class Cliente(Persona):
         self.carrito.append((producto, tienda))
 
     def comprar(self, producto, tienda):
-        self.agregar_producto(producto, tienda, "Compra realizada")
+        self.agregar_producto(producto, tienda, "Producto comprado con éxito!")
 
     def añadir_carrito(self, producto, tienda):
         self.agregar_producto(producto, tienda, "Producto añadido al carrito")
@@ -47,5 +45,5 @@ class Cliente(Persona):
         else:
             print("----------------------------------------")
             for producto, tienda in self.carrito:
-                print(f"Compró {producto} en {tienda}")
+                print(f"Tiene estos productos: {producto} de la {tienda}, en el carrito.")
                 print("----------------------------------------")

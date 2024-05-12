@@ -1,9 +1,6 @@
-# módulo2.py
-
 import os
 import re
 import json
-from modulo1 import Cliente
 
 ruta_archivo = os.path.join(os.getcwd(), "usuarios.json")
 
@@ -88,7 +85,7 @@ def registrar_usuario():
                         "edad": edad,
                         "email": email,
                         "intereses": intereses,
-                        "contrasena": contrasena,
+                        "contraseña": contrasena,
                         "productos": []
                     }
                     guardar_data(base_datos)
@@ -111,7 +108,7 @@ def login_usuario():
     base_datos = leerData()
     usuario = input("Ingrese nombre de usuario: ")
     contrasena = input("Ingrese contraseña: ")
-    if usuario in base_datos and base_datos[usuario]["contrasena"] == contrasena:
+    if usuario in base_datos and base_datos[usuario]["contraseña"] == contrasena:
         sesiones[usuario] = base_datos[usuario]
         print("Inicio de sesión exitoso.")
         return usuario
